@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romero (Salvia rosmarinus) — Herbario Botánico</title>
+
+    <!-- Google Fonts: tipografías elegantes con aire botánico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-oliva: #5a6b3c;
+            --verde-oliva-claro: #7a8f54;
+            --verde-oliva-oscuro: #3d4a26;
+            --blanco-crema: #faf7f2;
+            --blanco-crema-oscuro: #f0ebe0;
+            --marron-oscuro: #3c2f1f;
+            --marron-medio: #5c4033;
+            --marron-claro: #8b7355;
+            --dorado: #c9a96e;
+            --dorado-claro: #e0d0a8;
+            --dorado-oscuro: #a6844a;
+            --vidrio: rgba(250, 247, 242, 0.65);
+            --vidrio-oscuro: rgba(60, 47, 31, 0.35);
+            --sombra-suave: 0 4px 20px rgba(60, 47, 31, 0.08);
+            --sombra-media: 0 8px 40px rgba(60, 47, 31, 0.12);
+            --sombra-dorada: 0 4px 24px rgba(201, 169, 110, 0.25);
+            --borde-dorado: 1px solid rgba(201, 169, 110, 0.4);
+            --transicion-lenta: 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transicion-media: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transicion-rapida: 0.2s ease-out;
+            --radio-tarjeta: 18px;
+            --radio-boton: 40px;
+            --max-ancho: 1200px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--blanco-crema);
+            color: var(--marron-oscuro);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* ==================== PARTÍCULAS FLOTANTES ==================== */
+        #particulas-contenedor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particula {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: flotarParticula linear infinite;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        .particula.dorada {
+            background: radial-gradient(circle, rgba(201, 169, 110, 0.7) 0%, rgba(201, 169, 110, 0) 70%);
+            box-shadow: 0 0 8px rgba(201, 169, 110, 0.5);
+        }
+
+        .particula.verde {
+            background: radial-gradient(circle, rgba(122, 143, 84, 0.5) 0%, rgba(122, 143, 84, 0) 70%);
+            box-shadow: 0 0 6px rgba(122, 143, 84, 0.35);
+        }
+
+        .particula.crema {
+            background: radial-gradient(circle, rgba(240, 235, 224, 0.6) 0%, rgba(240, 235, 224, 0) 70%);
+            box-shadow: 0 0 10px rgba(240, 235, 224, 0.4);
+        }
+
+        @keyframes flotarParticula {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.3);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-110vh) translateX(60px) scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        /* ==================== BOTÓN VOLVER ARRIBA ==================== */
+        .btn-volver-arriba {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--marron-oscuro);
+            border: var(--borde-dorado);
+            color: var(--dorado-claro);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--sombra-media);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            background: rgba(60, 47, 31, 0.8);
+        }
+
+        .btn-volver-arriba.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .btn-volver-arriba:hover {
+            background: var(--marron-medio);
+            box-shadow: var(--sombra-dorada);
+            border-color: var(--dorado);
+            color: var(--dorado);
+            transform: translateY(-3px);
+        }
+
+        .btn-volver-arriba:active {
+            transform: scale(0.94);
+            transition: transform 0.15s ease;
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 650px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hero-fondo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 130%;
+            background-image: url('https://images.unsplash.com/photo-1597692493806-1bae3d4e2c8e?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center 35%;
+            background-repeat: no-repeat;
+            will-change: transform;
+            transform: translateY(0);
+            z-index: 0;
+            filter: brightness(0.55) saturate(0.85);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg,
+                    rgba(60, 47, 31, 0.55) 0%,
+                    rgba(45, 35, 20, 0.4) 40%,
+                    rgba(60, 47, 31, 0.65) 80%,
+                    rgba(60, 47, 31, 0.85) 100%);
+            z-index: 1;
+        }
+
+        /* Hojas decorativas animadas en el hero */
+        .hero-hojas-decorativas {
+            position: absolute;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .hoja-decorativa {
+            position: absolute;
+            animation: flotarHojaHero 8s ease-in-out infinite;
+            opacity: 0.5;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .hoja-decorativa:nth-child(1) {
+            top: 12%;
+            left: 8%;
+            width: 70px;
+            animation-delay: 0s;
+            animation-duration: 9s;
+        }
+        .hoja-decorativa:nth-child(2) {
+            top: 18%;
+            right: 10%;
+            width: 55px;
+            animation-delay: -3s;
+            animation-duration: 7.5s;
+        }
+        .hoja-decorativa:nth-child(3) {
+            top: 65%;
+            left: 15%;
+            width: 48px;
+            animation-delay: -5s;
+            animation-duration: 8.5s;
+        }
+        .hoja-decorativa:nth-child(4) {
+            top: 55%;
+            right: 18%;
+            width: 62px;
+            animation-delay: -2s;
+            animation-duration: 10s;
+        }
+        .hoja-decorativa:nth-child(5) {
+            top: 80%;
+            left: 60%;
+            width: 40px;
+            animation-delay: -6s;
+            animation-duration: 7s;
+        }
+
+        @keyframes flotarHojaHero {
+            0%,
+            100% {
+                transform: translateY(0) rotate(-3deg) scale(1);
+            }
+            25% {
+                transform: translateY(-22px) rotate(2deg) scale(1.08);
+            }
+            50% {
+                transform: translateY(-8px) rotate(-4deg) scale(0.94);
+            }
+            75% {
+                transform: translateY(-28px) rotate(5deg) scale(1.05);
+            }
+        }
+
+        .hero-contenido {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding: 2rem;
+            max-width: 850px;
+        }
+
+        .hero-emblema {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1.2rem;
+            opacity: 0.85;
+            animation: latidoEmblema 3.5s ease-in-out infinite;
+        }
+
+        @keyframes latidoEmblema {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.12);
+                opacity: 1;
+            }
+        }
+
+        .hero-titulo {
+            font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2.8rem, 6.5vw, 5rem);
+            font-weight: 700;
+            color: var(--blanco-crema);
+            letter-spacing: 0.02em;
+            line-height: 1.15;
+            margin-bottom: 0.6rem;
+            text-shadow: 0 3px 18px rgba(0, 0, 0, 0.4);
+            animation: aparecerTitulo 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-titulo span.italico {
+            font-style: italic;
+            font-weight: 400;
+            color: var(--dorado-claro);
+        }
+
+        @keyframes aparecerTitulo {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-subtitulo {
+            font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+            font-size: clamp(1.15rem, 2vw, 1.45rem);
+            font-weight: 400;
+            font-style: italic;
+            color: var(--dorado-claro);
+            letter-spacing: 0.04em;
+            margin-bottom: 2.4rem;
+            animation: aparecerTitulo 1.2s 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            opacity: 0;
+            transform: translateY(25px);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        .hero-boton {
+            display: inline-block;
+            padding: 0.9rem 2.6rem;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--blanco-crema);
+            background: transparent;
+            border: 1.5px solid var(--dorado);
+            border-radius: var(--radio-boton);
+            cursor: pointer;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            animation: aparecerTitulo 1.2s 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            opacity: 0;
+            transform: translateY(25px);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            background: rgba(201, 169, 110, 0.08);
+            box-shadow: 0 0 0 0 rgba(201, 169, 110, 0.3);
+        }
+
+        .hero-boton:hover {
+            background: rgba(201, 169, 110, 0.2);
+            border-color: var(--dorado-claro);
+            color: #fff;
+            box-shadow: 0 0 32px rgba(201, 169, 110, 0.4), 0 0 60px rgba(201, 169, 110, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .hero-boton:active {
+            transform: scale(0.96);
+            transition: transform 0.15s ease;
+        }
+
+        .hero-boton::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .hero-boton:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Flecha indicadora de scroll */
+        .hero-scroll-indicador {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: reboteScroll 2.2s ease-in-out infinite;
+            opacity: 0.75;
+            cursor: pointer;
+        }
+
+        .hero-scroll-indicador svg {
+            width: 36px;
+            height: 36px;
+            stroke: var(--dorado-claro);
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        @keyframes reboteScroll {
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(14px);
+            }
+        }
+
+        /* ==================== SEPARADORES ORGÁNICOS ==================== */
+        .separador-organico {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .separador-organico svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+        }
+
+        .separador-organico.invertido svg {
+            transform: rotate(180deg);
+            top: 0;
+            bottom: auto;
+        }
+
+        .separador-organico.verde-oliva svg path {
+            fill: var(--verde-oliva);
+        }
+        .separador-organico.blanco-crema svg path {
+            fill: var(--blanco-crema);
+        }
+        .separador-organico.marron-oscuro svg path {
+            fill: var(--marron-oscuro);
+        }
+        .separador-organico.verde-oscuro svg path {
+            fill: var(--verde-oliva-oscuro);
+        }
+
+        /* ==================== SECCIONES GENERALES ==================== */
+        .seccion {
+            position: relative;
+            z-index: 1;
+            padding: 5rem 2rem;
+        }
+
+        .seccion-contenedor {
+            max-width: var(--max-ancho);
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .seccion-titulo {
+            font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 600;
+            color: var(--marron-oscuro);
+            text-align: center;
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.03em;
+        }
+
+        .seccion-titulo.dorado {
+            color: var(--dorado-oscuro);
+        }
+
+        .seccion-subtitulo {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            text-align: center;
+            color: var(--marron-claro);
+            margin-bottom: 3.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .seccion-linea-decorativa {
+            display: block;
+            width: 70px;
+            height: 2px;
+            background: var(--dorado);
+            margin: 0.8rem auto 0;
+            border-radius: 2px;
+            opacity: 0.7;
+        }
+
+        /* ==================== INTRODUCCIÓN ==================== */
+        .seccion-intro {
+            background-color: var(--blanco-crema);
+            position: relative;
+            z-index: 2;
+        }
+
+        .intro-bloque {
+            background: var(--vidrio);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--borde-dorado);
+            border-radius: var(--radio-tarjeta);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--sombra-suave);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-bloque::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201, 169, 110, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .intro-icono {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .intro-texto {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(1.15rem, 2vw, 1.35rem);
+            line-height: 1.8;
+            color: var(--marron-oscuro);
+            letter-spacing: 0.03em;
+            font-weight: 500;
+        }
+
+        /* ==================== PROPIEDADES ==================== */
+        .seccion-propiedades {
+            background: linear-gradient(180deg, var(--verde-oliva-oscuro) 0%, #2d3820 100%);
+            color: var(--blanco-crema);
+            position: relative;
+            z-index: 2;
+        }
+
+        .seccion-propiedades .seccion-titulo {
+            color: var(--blanco-crema);
+        }
+        .seccion-propiedades .seccion-subtitulo {
+            color: var(--dorado-claro);
+        }
+        .seccion-propiedades .seccion-linea-decorativa {
+            background: var(--dorado-claro);
+        }
+
+        .propiedades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .propiedad-tarjeta {
+            background: rgba(250, 247, 242, 0.06);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(201, 169, 110, 0.25);
+            border-radius: var(--radio-tarjeta);
+            padding: 2.2rem 1.8rem;
+            text-align: center;
+            transition: all var(--transicion-media);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--sombra-suave);
+        }
+
+        .propiedad-tarjeta::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radio-tarjeta);
+            background: radial-gradient(ellipse at 50% 0%, rgba(201, 169, 110, 0.1) 0%, transparent 65%);
+            opacity: 0;
+            transition: opacity var(--transicion-media);
+            pointer-events: none;
+        }
+
+        .propiedad-tarjeta:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--sombra-dorada), 0 20px 50px rgba(0, 0, 0, 0.2);
+            border-color: rgba(201, 169, 110, 0.55);
+            background: rgba(250, 247, 242, 0.1);
+        }
+
+        .propiedad-tarjeta:hover::after {
+            opacity: 1;
+        }
+
+        .propiedad-icono {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(201, 169, 110, 0.15);
+            border-radius: 50%;
+            border: 1px solid rgba(201, 169, 110, 0.35);
+            transition: all var(--transicion-media);
+        }
+
+        .propiedad-tarjeta:hover .propiedad-icono {
+            background: rgba(201, 169, 110, 0.28);
+            border-color: var(--dorado);
+            box-shadow: 0 0 28px rgba(201, 169, 110, 0.35);
+            transform: scale(1.08);
+        }
+
+        .propiedad-icono svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--dorado-claro);
+            fill: none;
+            stroke-width: 1.6;
+            transition: stroke var(--transicion-media);
+        }
+
+        .propiedad-tarjeta:hover .propiedad-icono svg {
+            stroke: var(--dorado);
+        }
+
+        .propiedad-nombre {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dorado-claro);
+            margin-bottom: 0.7rem;
+            letter-spacing: 0.04em;
+            transition: color var(--transicion-media);
+        }
+
+        .propiedad-tarjeta:hover .propiedad-nombre {
+            color: var(--dorado);
+        }
+
+        .propiedad-descripcion {
+            font-size: 0.95rem;
+            color: rgba(250, 247, 242, 0.85);
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+        }
+
+        /* ==================== USOS COMUNES (TIMELINE) ==================== */
+        .seccion-usos {
+            background-color: var(--blanco-crema);
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 750px;
+            margin: 0 auto;
+            padding-left: 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 32px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg,
+                    transparent 0%,
+                    var(--dorado) 8%,
+                    var(--dorado) 92%,
+                    transparent 100%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 80px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-nodo {
+            position: absolute;
+            left: 18px;
+            top: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--blanco-crema);
+            border: 2.5px solid var(--dorado);
+            z-index: 2;
+            transition: all var(--transicion-media);
+            box-shadow: 0 0 0 6px rgba(201, 169, 110, 0.1);
+        }
+
+        .timeline-item:hover .timeline-nodo {
+            background: var(--dorado);
+            box-shadow: 0 0 0 14px rgba(201, 169, 110, 0.2), 0 0 24px rgba(201, 169, 110, 0.3);
+            border-color: var(--dorado-oscuro);
+        }
+
+        .timeline-contenido {
+            background: rgba(250, 247, 242, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(139, 115, 85, 0.2);
+            border-radius: var(--radio-tarjeta);
+            padding: 1.6rem 2rem;
+            transition: all var(--transicion-media);
+            box-shadow: var(--sombra-suave);
+            position: relative;
+        }
+
+        .timeline-contenido:hover {
+            box-shadow: var(--sombra-media);
+            border-color: rgba(201, 169, 110, 0.4);
+            transform: translateX(6px);
+            background: rgba(250, 247, 242, 0.9);
+        }
+
+        .timeline-titulo {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--marron-oscuro);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.03em;
+        }
+
+        .timeline-descripcion {
+            font-size: 0.98rem;
+            color: var(--marron-medio);
+            line-height: 1.6;
+        }
+
+        .timeline-icono-mini {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            margin-right: 0.4rem;
+            vertical-align: -4px;
+            opacity: 0.7;
+        }
+
+        /* ==================== GUÍA DE RIEGO ==================== */
+        .seccion-riego {
+            background: linear-gradient(180deg, #faf7f2 0%, #f0ebe0 100%);
+            position: relative;
+            z-index: 2;
+        }
+
+        .riego-bloque {
+            background: var(--blanco-crema);
+            border: 1px solid rgba(139, 115, 85, 0.25);
+            border-radius: var(--radio-tarjeta);
+            padding: 3rem 2.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: var(--sombra-media);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .riego-bloque::before {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(122, 143, 84, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .riego-titulo-principal {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--marron-oscuro);
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: 0.03em;
+        }
+
+        .riego-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
+        }
+
+        .riego-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            transition: all var(--transicion-media);
+            background: transparent;
+        }
+
+        .riego-item:hover {
+            background: rgba(201, 169, 110, 0.06);
+        }
+
+        .riego-icono {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(122, 143, 84, 0.1);
+            border-radius: 50%;
+            border: 1px solid rgba(122, 143, 84, 0.3);
+            transition: all var(--transicion-media);
+        }
+
+        .riego-item:hover .riego-icono {
+            background: rgba(122, 143, 84, 0.2);
+            border-color: var(--verde-oliva);
+            box-shadow: 0 0 18px rgba(122, 143, 84, 0.2);
+        }
+
+        .riego-icono svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--verde-oliva);
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        .riego-texto {
+            flex: 1;
+        }
+
+        .riego-nombre {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--marron-oscuro);
+            margin-bottom: 0.2rem;
+        }
+
+        .riego-descripcion {
+            font-size: 0.93rem;
+            color: var(--marron-medio);
+            line-height: 1.5;
+        }
+
+        /* ==================== ILUSTRACIÓN BOTÁNICA DECORATIVA ==================== */
+        .ilustracion-botanica-decorativa {
+            text-align: center;
+            padding: 2rem 0;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 1;
+            position: relative;
+        }
+
+        .ilustracion-botanica-decorativa svg {
+            width: clamp(140px, 25vw, 220px);
+            height: auto;
+            animation: flotarSuave 6s ease-in-out infinite;
+        }
+
+        @keyframes flotarSuave {
+            0%,
+            100% {
+                transform: translateY(0) rotate(-1deg);
+            }
+            50% {
+                transform: translateY(-16px) rotate(1deg);
+            }
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: var(--marron-oscuro);
+            color: var(--blanco-crema);
+            text-align: center;
+            padding: 2.5rem 2rem;
+            position: relative;
+            z-index: 2;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.05rem;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-linea {
+            display: block;
+            width: 50px;
+            height: 1.5px;
+            background: var(--dorado);
+            margin: 0.8rem auto;
+            opacity: 0.6;
+        }
+
+        .footer-nombre-cientifico {
+            font-style: italic;
+            color: var(--dorado-claro);
+        }
+
+        /* ==================== ANIMACIONES DE ENTRADA ==================== */
+        .animado-entrada {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .animado-entrada.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Retrasos escalonados para tarjetas */
+        .propiedad-tarjeta:nth-child(1) {
+            transition-delay: 0s;
+        }
+        .propiedad-tarjeta:nth-child(2) {
+            transition-delay: 0.1s;
+        }
+        .propiedad-tarjeta:nth-child(3) {
+            transition-delay: 0.2s;
+        }
+        .propiedad-tarjeta:nth-child(4) {
+            transition-delay: 0.3s;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 900px) {
+            .hero-titulo {
+                font-size: clamp(2rem, 7vw, 3.2rem);
+            }
+
+            .propiedades-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1.4rem;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+            .timeline-item {
+                padding-left: 55px;
+            }
+            .timeline-nodo {
+                left: 8px;
+                width: 24px;
+                height: 24px;
+            }
+            .timeline-contenido {
+                padding: 1.2rem 1.3rem;
+            }
+            .timeline-contenido:hover {
+                transform: translateX(3px);
+            }
+
+            .seccion {
+                padding: 3.5rem 1.2rem;
+            }
+            .riego-bloque,
+            .intro-bloque {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero {
+                min-height: 550px;
+            }
+            .hero-titulo {
+                font-size: 2rem;
+            }
+            .hero-subtitulo {
+                font-size: 1rem;
+            }
+            .hero-boton {
+                padding: 0.7rem 1.8rem;
+                font-size: 0.9rem;
+            }
+            .hero-hojas-decorativas .hoja-decorativa {
+                width: 30px !important;
+            }
+            .hero-hojas-decorativas .hoja-decorativa:nth-child(1) {
+                width: 45px !important;
+            }
+            .hero-hojas-decorativas .hoja-decorativa:nth-child(2) {
+                width: 35px !important;
+            }
+
+            .propiedades-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+
+            .timeline::before {
+                left: 14px;
+            }
+            .timeline-item {
+                padding-left: 42px;
+                margin-bottom: 2rem;
+            }
+            .timeline-nodo {
+                left: 4px;
+                width: 20px;
+                height: 20px;
+            }
+            .timeline-contenido {
+                padding: 1rem 1.1rem;
+            }
+            .timeline-titulo {
+                font-size: 1.1rem;
+            }
+
+            .btn-volver-arriba {
+                bottom: 18px;
+                right: 18px;
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
+            }
+            .seccion-titulo {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== PARTÍCULAS FLOTANTES ==================== -->
+    <div id="particulas-contenedor" aria-hidden="true"></div>
+
+    <!-- ==================== BOTÓN VOLVER ARRIBA ==================== -->
+    <button class="btn-volver-arriba" id="btnVolverArriba" aria-label="Volver al inicio" title="Volver al inicio">
+        ↑
+    </button>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero" id="hero">
+        <div class="hero-fondo" id="heroFondo"></div>
+        <div class="hero-overlay"></div>
+
+        <!-- Hojas decorativas animadas -->
+        <div class="hero-hojas-decorativas" aria-hidden="true">
+            <!-- Hoja decorativa 1 -->
+            <svg class="hoja-decorativa" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 5 C12 20 5 50 8 75 C8 80 12 95 20 95 C28 95 30 80 30 70 C30 80 32 95 40 95 C48 95 52 80 52 75 C55 50 48 20 30 5Z"
+                fill="none" stroke="rgba(180,200,160,0.6)" stroke-width="1.8" stroke-linejoin="round"/>
+                <line x1="30" y1="5" x2="30" y2="96" stroke="rgba(180,200,160,0.5)" stroke-width="1.2"/>
+            </svg>
+            <!-- Hoja decorativa 2 -->
+            <svg class="hoja-decorativa" viewBox="0 0 55 90" xmlns="http://www.w3.org/2000/svg">
+                <path d="M27 4 C10 18 4 45 7 68 C7 73 11 86 18 86 C25 86 27 72 27 63 C27 72 29 86 36 86 C43 86 47 73 47 68 C50 45 44 18 27 4Z"
+                fill="none" stroke="rgba(190,210,170,0.5)" stroke-width="1.6" stroke-linejoin="round"/>
+                <line x1="27" y1="4" x2="27" y2="87" stroke="rgba(190,210,170,0.4)" stroke-width="1"/>
+            </svg>
+            <!-- Hoja decorativa 3 -->
+            <svg class="hoja-decorativa" viewBox="0 0 50 80" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 3 C9 16 4 40 6 60 C6 65 10 77 16 77 C22 77 25 64 25 56 C25 64 28 77 34 77 C40 77 44 65 44 60 C46 40 41 16 25 3Z"
+                fill="none" stroke="rgba(175,195,155,0.55)" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="25" y1="3" x2="25" y2="78" stroke="rgba(175,195,155,0.4)" stroke-width="1"/>
+            </svg>
+            <!-- Hoja decorativa 4 -->
+            <svg class="hoja-decorativa" viewBox="0 0 58 95" xmlns="http://www.w3.org/2000/svg">
+                <path d="M29 4 C11 19 5 48 8 72 C8 77 12 91 19 91 C26 91 29 76 29 66 C29 76 32 91 39 91 C46 91 50 77 50 72 C53 48 47 19 29 4Z"
+                fill="none" stroke="rgba(185,205,165,0.5)" stroke-width="1.7" stroke-linejoin="round"/>
+                <line x1="29" y1="4" x2="29" y2="92" stroke="rgba(185,205,165,0.4)" stroke-width="1.1"/>
+            </svg>
+            <!-- Hoja decorativa 5 -->
+            <svg class="hoja-decorativa" viewBox="0 0 45 75" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 3 C8 15 4 38 6 56 C6 60 9 72 15 72 C20 72 22 60 22 52 C22 60 24 72 29 72 C35 72 38 60 38 56 C40 38 36 15 22 3Z"
+                fill="none" stroke="rgba(170,190,150,0.5)" stroke-width="1.4" stroke-linejoin="round"/>
+                <line x1="22" y1="3" x2="22" y2="73" stroke="rgba(170,190,150,0.35)" stroke-width="0.9"/>
+            </svg>
+        </div>
+
+        <div class="hero-contenido">
+            <!-- Emblema botánico -->
+            <svg class="hero-emblema" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="27" fill="none" stroke="rgba(201,169,110,0.6)" stroke-width="1.2"/>
+                <circle cx="30" cy="30" r="22" fill="none" stroke="rgba(201,169,110,0.35)" stroke-width="0.8"/>
+                <path d="M30 8 C18 18 14 34 18 46 C20 50 24 54 30 50 C36 54 40 50 42 46 C46 34 42 18 30 8Z"
+                fill="none" stroke="rgba(201,169,110,0.7)" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="30" y1="8" x2="30" y2="52" stroke="rgba(201,169,110,0.5)" stroke-width="0.9"/>
+            </svg>
+
+            <h1 class="hero-titulo">
+                Romero <span class="italico">(Salvia rosmarinus)</span>
+            </h1>
+            <p class="hero-subtitulo">
+                Una planta medicinal, aromática y resistente con siglos de historia.
+            </p>
+            <a href="#introduccion" class="hero-boton">Descubrir sus beneficios</a>
+        </div>
+
+        <!-- Indicador de scroll -->
+        <div class="hero-scroll-indicador" id="scrollIndicador" title="Desplazarse hacia abajo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="4 8 12 16 20 8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ==================== SEPARADOR ORGÁNICO ==================== -->
+    <div class="separador-organico verde-oliva" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 40 C240 10 480 60 720 35 C960 10 1200 55 1440 30 L1440 80 L0 80 Z"
+            fill="var(--verde-oliva)" />
+        </svg>
+    </div>
+
+    <!-- ==================== INTRODUCCIÓN ==================== -->
+    <section class="seccion seccion-intro animado-entrada" id="introduccion">
+        <div class="seccion-contenedor">
+            <div class="intro-bloque">
+                <svg class="intro-icono" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(201,169,110,0.5)" stroke-width="1.3"/>
+                    <path d="M25 10 C17 15 14 28 16 38 C18 44 22 48 25 44 C28 48 32 44 34 38 C36 28 33 15 25 10Z"
+                    fill="none" stroke="rgba(90,107,60,0.6)" stroke-width="1.6" stroke-linejoin="round"/>
+                    <line x1="25" y1="10" x2="25" y2="46" stroke="rgba(90,107,60,0.4)" stroke-width="0.8"/>
+                </svg>
+                <p class="intro-texto">
+                    El romero <em>(Salvia rosmarinus)</em> es una planta medicinal y aromática muy resistente. Destaca por sus propiedades antioxidantes, digestivas y estimulantes de la circulación, y requiere riegos escasos para evitar que sus raíces se pudran.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ILUSTRACIÓN BOTÁNICA DECORATIVA ==================== -->
+    <div class="ilustracion-botanica-decorativa" aria-hidden="true">
+        <svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+            <g opacity="0.5">
+                <!-- Tallo principal -->
+                <line x1="60" y1="140" x2="60" y2="25" stroke="rgba(90,107,60,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Ramitas laterales -->
+                <line x1="60" y1="100" x2="35" y2="75" stroke="rgba(90,107,60,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="60" y1="85" x2="88" y2="58" stroke="rgba(90,107,60,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+                <line x1="60" y1="65" x2="32" y2="42" stroke="rgba(90,107,60,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="60" y1="55" x2="90" y2="32" stroke="rgba(90,107,60,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+                <!-- Hojitas -->
+                <ellipse cx="36" cy="72" rx="10" ry="4" fill="none" stroke="rgba(122,143,84,0.5)" stroke-width="1" transform="rotate(-30 36 72)"/>
+                <ellipse cx="86" cy="55" rx="10" ry="4" fill="none" stroke="rgba(122,143,84,0.5)" stroke-width="1" transform="rotate(25 86 55)"/>
+                <ellipse cx="34" cy="39" rx="8" ry="3.5" fill="none" stroke="rgba(122,143,84,0.45)" stroke-width="0.9" transform="rotate(-35 34 39)"/>
+                <ellipse cx="88" cy="29" rx="8" ry="3.5" fill="none" stroke="rgba(122,143,84,0.45)" stroke-width="0.9" transform="rotate(30 88 29)"/>
+                <!-- Flores pequeñas -->
+                <circle cx="60" cy="22" r="4" fill="none" stroke="rgba(180,160,200,0.5)" stroke-width="1"/>
+                <circle cx="48" cy="30" r="3" fill="none" stroke="rgba(180,160,200,0.4)" stroke-width="0.8"/>
+                <circle cx="72" cy="28" r="3" fill="none" stroke="rgba(180,160,200,0.4)" stroke-width="0.8"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- ==================== SEPARADOR ORGÁNICO INVERTIDO ==================== -->
+    <div class="separador-organico verde-oliva invertido" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 40 C240 10 480 60 720 35 C960 10 1200 55 1440 30 L1440 80 L0 80 Z"
+            fill="var(--verde-oliva)" />
+        </svg>
+    </div>
+
+    <!-- ==================== PROPIEDADES PRINCIPALES ==================== -->
+    <section class="seccion seccion-propiedades" id="propiedades">
+        <div class="seccion-contenedor">
+            <h2 class="seccion-titulo">Propiedades principales</h2>
+            <p class="seccion-subtitulo">Los dones naturales del romero</p>
+            <div class="seccion-linea-decorativa"></div>
+
+            <div class="propiedades-grid">
+                <!-- Tarjeta 1: Antioxidante -->
+                <div class="propiedad-tarjeta animado-entrada">
+                    <div class="propiedad-icono">
+                        <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="14" cy="14" r="10" stroke-width="1.6"/>
+                            <circle cx="14" cy="14" r="4" stroke-width="1.2"/>
+                            <line x1="14" y1="2" x2="14" y2="7" stroke-width="1.4" stroke-linecap="round"/>
+                            <line x1="14" y1="21" x2="14" y2="26" stroke-width="1.4" stroke-linecap="round"/>
+                            <line x1="2" y1="14" x2="7" y2="14" stroke-width="1.4" stroke-linecap="round"/>
+                            <line x1="21" y1="14" x2="26" y2="14" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="propiedad-nombre">Antioxidante</h3>
+                    <p class="propiedad-descripcion">Protege a las células del daño diario gracias a sus ácidos fenólicos.</p>
+                </div>
+
+                <!-- Tarjeta 2: Digestivo -->
+                <div class="propiedad-tarjeta animado-entrada">
+                    <div class="propiedad-icono">
+                        <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="6" y="4" width="16" height="20" rx="4" stroke-width="1.6"/>
+                            <line x1="10" y1="10" x2="18" y2="10" stroke-width="1.3" stroke-linecap="round"/>
+                            <line x1="10" y1="14" x2="18" y2="14" stroke-width="1.3" stroke-linecap="round"/>
+                            <line x1="10" y1="18" x2="15" y2="18" stroke-width="1.3" stroke-linecap="round"/>
+                            <circle cx="20" cy="8" r="2.5" stroke-width="1.2"/>
+                        </svg>
+                    </div>
+                    <h3 class="propiedad-nombre">Digestivo</h3>
+                    <p class="propiedad-descripcion">Ayuda a reducir gases, mejora digestiones pesadas y protege el hígado.</p>
+                </div>
+
+                <!-- Tarjeta 3: Estimulante -->
+                <div class="propiedad-tarjeta animado-entrada">
+                    <div class="propiedad-icono">
+                        <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="14" cy="9" r="5" stroke-width="1.6"/>
+                            <path d="M8 22 C8 16 20 16 20 22" stroke-width="1.6" stroke-linecap="round"/>
+                            <circle cx="14" cy="4" r="1.5" fill="none" stroke-width="1"/>
+                            <line x1="14" y1="1" x2="14" y2="2.5" stroke-width="1.2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="propiedad-nombre">Estimulante</h3>
+                    <p class="propiedad-descripcion">Favorece la circulación sanguínea y ayuda a mejorar la concentración.</p>
+                </div>
+
+                <!-- Tarjeta 4: Antiséptico -->
+                <div class="propiedad-tarjeta animado-entrada">
+                    <div class="propiedad-icono">
+                        <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 14 L11 19 L22 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="14" cy="14" r="12" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <h3 class="propiedad-nombre">Antiséptico</h3>
+                    <p class="propiedad-descripcion">Ayuda a limpiar heridas leves y frena el crecimiento de microbios.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SEPARADOR ORGÁNICO ==================== -->
+    <div class="separador-organico blanco-crema" aria-hidden="true">
+        <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 25 C300 50 600 5 900 30 C1100 48 1300 10 1440 28 L1440 70 L0 70 Z"
+            fill="var(--blanco-crema)" />
+        </svg>
+    </div>
+
+    <!-- ==================== ILUSTRACIÓN BOTÁNICA DECORATIVA ==================== -->
+    <div class="ilustracion-botanica-decorativa" aria-hidden="true">
+        <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+            <g opacity="0.45">
+                <line x1="50" y1="130" x2="50" y2="20" stroke="rgba(90,107,60,0.55)" stroke-width="2.2" stroke-linecap="round"/>
+                <line x1="50" y1="95" x2="28" y2="68" stroke="rgba(90,107,60,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="50" y1="78" x2="75" y2="50" stroke="rgba(90,107,60,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="50" y1="58" x2="26" y2="38" stroke="rgba(90,107,60,0.35)" stroke-width="1" stroke-linecap="round"/>
+                <line x1="50" y1="48" x2="78" y2="28" stroke="rgba(90,107,60,0.35)" stroke-width="1" stroke-linecap="round"/>
+                <ellipse cx="30" cy="64" rx="9" ry="3.5" fill="none" stroke="rgba(122,143,84,0.45)" stroke-width="0.9" transform="rotate(-28 30 64)"/>
+                <ellipse cx="73" cy="47" rx="9" ry="3.5" fill="none" stroke="rgba(122,143,84,0.45)" stroke-width="0.9" transform="rotate(22 73 47)"/>
+                <ellipse cx="28" cy="35" rx="7" ry="3" fill="none" stroke="rgba(122,143,84,0.4)" stroke-width="0.8" transform="rotate(-32 28 35)"/>
+                <ellipse cx="76" cy="25" rx="7" ry="3" fill="none" stroke="rgba(122,143,84,0.4)" stroke-width="0.8" transform="rotate(28 76 25)"/>
+                <circle cx="50" cy="18" r="3.5" fill="none" stroke="rgba(180,160,200,0.45)" stroke-width="0.9"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- ==================== USOS COMUNES (TIMELINE) ==================== -->
+    <section class="seccion seccion-usos" id="usos">
+        <div class="seccion-contenedor">
+            <h2 class="seccion-titulo">Usos comunes</h2>
+            <p class="seccion-subtitulo">Tradición y versatilidad en cada rama</p>
+            <div class="seccion-linea-decorativa"></div>
+
+            <div class="timeline">
+                <!-- Cocina -->
+                <div class="timeline-item animado-entrada">
+                    <div class="timeline-nodo"></div>
+                    <div class="timeline-contenido">
+                        <h3 class="timeline-titulo">
+                            <svg class="timeline-icono-mini" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(201,169,110,0.7)" stroke-width="1.3"/>
+                                <line x1="6" y1="7" x2="14" y2="13" stroke="rgba(201,169,110,0.6)" stroke-width="1" stroke-linecap="round"/>
+                                <line x1="14" y1="7" x2="6" y2="13" stroke="rgba(201,169,110,0.6)" stroke-width="1" stroke-linecap="round"/>
+                            </svg>
+                            Cocina
+                        </h3>
+                        <p class="timeline-descripcion">Como condimento en carnes, guisos, asados y vegetales.</p>
+                    </div>
+                </div>
+
+                <!-- Infusiones -->
+                <div class="timeline-item animado-entrada">
+                    <div class="timeline-nodo"></div>
+                    <div class="timeline-contenido">
+                        <h3 class="timeline-titulo">
+                            <svg class="timeline-icono-mini" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="5" y="3" width="10" height="13" rx="2" fill="none" stroke="rgba(201,169,110,0.7)" stroke-width="1.3"/>
+                                <path d="M2 8 L5 5" stroke="rgba(201,169,110,0.5)" stroke-width="1" stroke-linecap="round"/>
+                                <line x1="8" y1="9" x2="12" y2="9" stroke="rgba(201,169,110,0.5)" stroke-width="0.8" stroke-linecap="round"/>
+                                <line x1="8" y1="12" x2="12" y2="12" stroke="rgba(201,169,110,0.5)" stroke-width="0.8" stroke-linecap="round"/>
+                            </svg>
+                            Infusiones
+                        </h3>
+                        <p class="timeline-descripcion">Se toma en té para aliviar dolores de estómago o calmar los nervios.</p>
+                    </div>
+                </div>
+
+                <!-- Cosmética y fricciones -->
+                <div class="timeline-item animado-entrada">
+                    <div class="timeline-nodo"></div>
+                    <div class="timeline-contenido">
+                        <h3 class="timeline-titulo">
+                            <svg class="timeline-icono-mini" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="10" cy="6" r="3" fill="none" stroke="rgba(201,169,110,0.7)" stroke-width="1.3"/>
+                                <path d="M4 14 C4 9 16 9 16 14" fill="none" stroke="rgba(201,169,110,0.7)" stroke-width="1.3" stroke-linecap="round"/>
+                                <line x1="10" y1="14" x2="10" y2="18" stroke="rgba(201,169,110,0.5)" stroke-width="1" stroke-linecap="round"/>
+                            </svg>
+                            Cosmética y fricciones
+                        </h3>
+                        <p class="timeline-descripcion">El alcohol de romero se usa en masajes para dolores musculares y articulares, o en tónicos para fortalecer el cabello.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SEPARADOR ORGÁNICO ==================== -->
+    <div class="separador-organico verde-oscuro" aria-hidden="true">
+        <svg viewBox="0 0 1440 65" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 30 C200 8 450 55 720 28 C1000 2 1250 50 1440 22 L1440 65 L0 65 Z"
+            fill="var(--verde-oliva-oscuro)" />
+        </svg>
+    </div>
+
+    <!-- ==================== GUÍA DE RIEGO ==================== -->
+    <section class="seccion seccion-riego" id="riego">
+        <div class="seccion-contenedor">
+            <div class="riego-bloque animado-entrada">
+                <h2 class="riego-titulo-principal">Guía de riego</h2>
+                <div class="seccion-linea-decorativa" style="margin-bottom:2rem;"></div>
+
+                <ul class="riego-lista">
+                    <li class="riego-item">
+                        <div class="riego-icono">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="9" stroke-width="1.8"/>
+                                <line x1="12" y1="6" x2="12" y2="10" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="12" y1="14" x2="12" y2="18" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="6" y1="12" x2="10" y2="12" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="14" y1="12" x2="18" y2="12" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="riego-texto">
+                            <span class="riego-nombre">Frecuencia baja</span>
+                            <p class="riego-descripcion">Tolera muy bien la sequía.</p>
+                        </div>
+                    </li>
+                    <li class="riego-item">
+                        <div class="riego-icono">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="4" y="6" width="16" height="14" rx="3" stroke-width="1.8"/>
+                                <line x1="8" y1="11" x2="16" y2="11" stroke-width="1.3" stroke-linecap="round"/>
+                                <line x1="8" y1="15" x2="14" y2="15" stroke-width="1.3" stroke-linecap="round"/>
+                                <circle cx="17" cy="9" r="1.5" fill="none" stroke-width="1.1"/>
+                            </svg>
+                        </div>
+                        <div class="riego-texto">
+                            <span class="riego-nombre">Dejar secar</span>
+                            <p class="riego-descripcion">Se debe regar solo cuando la tierra esté completamente seca al tacto.</p>
+                        </div>
+                    </li>
+                    <li class="riego-item">
+                        <div class="riego-icono">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="9" stroke-width="1.8"/>
+                                <line x1="5" y1="5" x2="19" y2="19" stroke-width="2" stroke-linecap="round" stroke="rgba(180,80,60,0.7)"/>
+                                <circle cx="8" cy="8" r="1.2" fill="none" stroke-width="1"/>
+                            </svg>
+                        </div>
+                        <div class="riego-texto">
+                            <span class="riego-nombre">Evitar encharcamiento</span>
+                            <p class="riego-descripcion">Un exceso de agua pudre las raíces con facilidad, por lo que necesita suelo con gran drenaje.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <p>Herbario Botánico — Romero</p>
+        <span class="footer-linea"></span>
+        <p class="footer-nombre-cientifico">Salvia rosmarinus</p>
+        <p style="font-size:0.85rem;opacity:0.6;margin-top:0.5rem;">Planta medicinal, aromática y resistente con siglos de historia.</p>
+    </footer>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script>
+        (function() {
+            // ============ PARALLAX DEL HERO ============
+            const heroFondo = document.getElementById('heroFondo');
+            let ticking = false;
+
+            function actualizarParallax() {
+                const scrollY = window.pageYOffset || window.scrollY;
+                const heroAltura = document.querySelector('.hero').offsetHeight;
+                if (scrollY <= heroAltura) {
+                    const desplazamiento = scrollY * 0.45;
+                    heroFondo.style.transform = `translateY(${desplazamiento}px)`;
+                }
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(actualizarParallax);
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            // ============ BOTÓN VOLVER ARRIBA ============
+            const btnVolverArriba = document.getElementById('btnVolverArriba');
+
+            function manejarBotonVolver() {
+                const scrollY = window.pageYOffset || window.scrollY;
+                if (scrollY > 500) {
+                    btnVolverArriba.classList.add('visible');
+                } else {
+                    btnVolverArriba.classList.remove('visible');
+                }
+            }
+
+            window.addEventListener('scroll', manejarBotonVolver, { passive: true });
+
+            btnVolverArriba.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ============ SCROLL INDICADOR DEL HERO ============
+            const scrollIndicador = document.getElementById('scrollIndicador');
+            scrollIndicador.addEventListener('click', function() {
+                const intro = document.getElementById('introduccion');
+                if (intro) {
+                    intro.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            // ============ INTERSECTION OBSERVER PARA ANIMACIONES ============
+            const elementosAnimados = document.querySelectorAll('.animado-entrada');
+            const timelineItems = document.querySelectorAll('.timeline-item');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // No des-observamos para permitir re-animación si se desea
+                        // pero para rendimiento, des-observamos después de animar
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            elementosAnimados.forEach(function(el) {
+                observer.observe(el);
+            });
+
+            // Observador específico para timeline items con margen mayor
+            const timelineObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        timelineObserver.unobserve(entry.target);
+                    }
+                });
+            }, { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0.2 });
+
+            timelineItems.forEach(function(el) {
+                timelineObserver.observe(el);
+            });
+
+            // ============ PARTÍCULAS FLOTANTES ============
+            const particulasContenedor = document.getElementById('particulas-contenedor');
+            const tiposParticula = ['dorada', 'verde', 'crema'];
+            const maxParticulas = 28;
+
+            function crearParticula() {
+                if (particulasContenedor.children.length >= maxParticulas) return;
+
+                const particula = document.createElement('div');
+                const tipo = tiposParticula[Math.floor(Math.random() * tiposParticula.length)];
+                particula.classList.add('particula', tipo);
+
+                const tamanio = Math.random() * 6 + 3; // entre 3 y 9 px
+                particula.style.width = tamanio + 'px';
+                particula.style.height = tamanio + 'px';
+
+                const inicioX = Math.random() * 100;
+                particula.style.left = inicioX + '%';
+                particula.style.bottom = '-5%';
+
+                const duracion = Math.random() * 18 + 14; // entre 14 y 32 segundos
+                particula.style.animationDuration = duracion + 's';
+
+                const retraso = Math.random() * 8;
+                particula.style.animationDelay = retraso + 's';
+
+                particulasContenedor.appendChild(particula);
+
+                // Eliminar partícula tras su animación
+                const tiempoTotal = (duracion + retraso) * 1000 + 500;
+                setTimeout(function() {
+                    if (particula.parentNode === particulasContenedor) {
+                        particulasContenedor.removeChild(particula);
+                    }
+                }, tiempoTotal);
+            }
+
+            // Crear partículas iniciales
+            for (let i = 0; i < 16; i++) {
+                setTimeout(function() {
+                    crearParticula();
+                }, i * 350);
+            }
+
+            // Reponer partículas periódicamente
+            setInterval(function() {
+                if (particulasContenedor.children.length < maxParticulas) {
+                    crearParticula();
+                }
+            }, 2200);
+
+            // ============ SCROLL SUAVE PARA ENLACES INTERNOS ============
+            document.querySelectorAll('a[href^="#"]').forEach(function(enlace) {
+                enlace.addEventListener('click', function(e) {
+                    const destinoId = this.getAttribute('href');
+                    if (destinoId === '#') return;
+                    const destino = document.querySelector(destinoId);
+                    if (destino) {
+                        e.preventDefault();
+                        destino.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // ============ INICIALIZACIÓN ============
+            manejarBotonVolver();
+            actualizarParallax();
+
+            console.log('🌿 Herbario Botánico — Romero (Salvia rosmarinus) — Página lista.');
+        })();
+    </script>
+</body>
+</html>
